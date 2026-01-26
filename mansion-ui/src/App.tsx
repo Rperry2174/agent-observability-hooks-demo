@@ -16,7 +16,7 @@ import {
   getAgentGridPosition,
   getLeadPhase,
   getTimelineTotalMs,
-  getRoomCenter,
+  getDossierPosition,
   phaseLabelMap,
   ROOM_ORDER,
   statusClassMap,
@@ -57,7 +57,7 @@ export default function App() {
   const [isRunning, setIsRunning] = useState(false);
   const startRef = useRef<number | null>(null);
 
-  const { gridSize, cellSize, layout, hallwayTiles, roomDoors } = map;
+  const { gridSize, cellSize, layout, hallwayTiles, roomDoors, roomDossiers } = map;
   const gridWidth = gridSize.cols * cellSize;
   const gridHeight = gridSize.rows * cellSize;
 
@@ -97,10 +97,12 @@ export default function App() {
   const phaseRank: Record<AgentPhase, number> = {
     waiting: 0,
     'walking-out': 1,
-    'in-room': 2,
-    translating: 3,
-    returning: 4,
-    reported: 5,
+    'entering-room': 2,
+    'at-dossier': 3,
+    translating: 4,
+    'exiting-room': 5,
+    returning: 6,
+    reported: 7,
   };
 
   const allReported = agentConfigs.every(
@@ -110,7 +112,7 @@ export default function App() {
   const collectedWords = agentConfigs
     .map((agent) => {
       const phase = getAgentPhase(agent, elapsedMs);
-      if (phaseRank[phase] < phaseRank.returning) return null;
+      if (phaseRank[phase] < phaseRank['exiting-room']) return null;
       const evidence = evidenceByRoom.get(agent.room);
       if (!evidence) return null;
       return {
@@ -187,7 +189,7 @@ export default function App() {
           <p className="eyebrow">Mansion Investigation</p>
           <h1>Mansion Map</h1>
           <p className="subhead">
-            Detective Office in the center. Agents march through hallways to rooms.
+            Detective Office in the center. Agents walk to dossiers inside each room.
           </p>
         </div>
         <div className="controls">
@@ -217,6 +219,7 @@ export default function App() {
             className="grid-map"
             style={{ width: gridWidth, height: gridHeight }}
           >
+            {/* Grid cells */}
             {Array.from({ length: gridSize.rows }).map((_, y) =>
               Array.from({ length: gridSize.cols }).map((_, x) => {
                 const room = roomAtCell(x, y);
@@ -250,6 +253,7 @@ export default function App() {
               }),
             )}
 
+            {/* Room labels */}
             {layout.map((room) => {
               const cx = (room.gridX + room.width / 2) * cellSize;
               const cy = (room.gridY + room.height / 2) * cellSize;
@@ -266,12 +270,32 @@ export default function App() {
               );
             })}
 
+            {/* Dossier icons inside rooms */}
+            {ROOM_ORDER.map((roomName) => {
+              const dossier = roomDossiers[roomName];
+              if (!dossier) return null;
+              return (
+                <div
+                  key={`dossier-${roomName}`}
+                  className="dossier-icon"
+                  style={{
+                    left: dossier.gridX * cellSize + cellSize / 2,
+                    top: dossier.gridY * cellSize + cellSize / 2,
+                  }}
+                  title={`${roomName} Dossier`}
+                >
+                  📋
+                </div>
+              );
+            })}
+
+            {/* Agent sprites */}
             {agentConfigs.map((agent, idx) => {
               const phase = getAgentPhase(agent, elapsedMs);
               const position = getAgentGridPosition(agent, elapsedMs, map);
               const isAtOffice = phase === 'waiting' || phase === 'reported';
-              const offsetX = isAtOffice ? (idx % 3 - 1) * 14 : 0;
-              const offsetY = isAtOffice ? Math.floor(idx / 3) * 14 - 7 : 0;
+              const offsetX = isAtOffice ? (idx % 3 - 1) * 16 : 0;
+              const offsetY = isAtOffice ? Math.floor(idx / 3) * 16 - 8 : 0;
               return (
                 <div
                   key={agent.room}
@@ -287,19 +311,20 @@ export default function App() {
               );
             })}
 
+            {/* Speech bubbles during translating phase */}
             {agentConfigs.map((agent) => {
               const phase = getAgentPhase(agent, elapsedMs);
               if (phase !== 'translating') return null;
               const evidence = evidenceByRoom.get(agent.room);
               if (!evidence) return null;
-              const center = getRoomCenter(map, agent.room);
+              const dossierPos = getDossierPosition(map, agent.room);
               return (
                 <div
                   key={`${agent.room}-bubble`}
                   className="speech-bubble"
                   style={{
-                    left: center.x,
-                    top: center.y - 50,
+                    left: dossierPos.x,
+                    top: dossierPos.y - 40,
                   }}
                 >
                   #{evidence.wordOrder}: &quot;{evidence.word}&quot;

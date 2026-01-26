@@ -12,14 +12,17 @@ export type GridMapData = {
   rooms: string[];
   layout: RoomLayout[];
   roomDoors: Record<string, { gridX: number; gridY: number }>;
+  roomDossiers: Record<string, { gridX: number; gridY: number }>;
   hallwayTiles: [number, number][];
 };
 
 export type AgentPhase =
   | 'waiting'
   | 'walking-out'
-  | 'in-room'
+  | 'entering-room'
+  | 'at-dossier'
   | 'translating'
+  | 'exiting-room'
   | 'returning'
   | 'reported';
 
@@ -37,13 +40,17 @@ export type GridCell = { x: number; y: number };
 export type AgentConfig = {
   room: string;
   agent: string;
-  pathOut: GridCell[];
-  pathBack: GridCell[];
+  pathToRoom: GridCell[];
+  pathToDossier: GridCell[];
+  pathFromDossier: GridCell[];
+  pathToOffice: GridCell[];
   totalSteps: number;
   startOffsetMs: number;
-  walkMs: number;
-  inRoomMs: number;
+  walkToRoomMs: number;
+  enterRoomMs: number;
+  atDossierMs: number;
   translateMs: number;
+  exitRoomMs: number;
   returnMs: number;
   debriefMs: number;
   totalMs: number;
@@ -52,16 +59,18 @@ export type AgentConfig = {
 export type Point = { x: number; y: number };
 
 export const ROOM_ORDER = ['Kitchen', 'Library', 'Study', 'Ballroom', 'Conservatory'];
-export const MS_PER_STEP = 350;
-export const BASE_ROOM_MS = 2500;
-export const BASE_TRANSLATE_MS = 2200;
-export const BASE_DEBRIEF_MS = 800;
+export const MS_PER_STEP = 200;
+export const BASE_DOSSIER_MS = 1800;
+export const BASE_TRANSLATE_MS = 2000;
+export const BASE_DEBRIEF_MS = 600;
 
 export const phaseLabelMap: Record<AgentPhase, string> = {
   waiting: 'waiting',
-  'walking-out': 'walking out',
-  'in-room': 'in room',
+  'walking-out': 'walking to room',
+  'entering-room': 'entering room',
+  'at-dossier': 'reading dossier',
   translating: 'translating',
+  'exiting-room': 'exiting room',
   returning: 'returning',
   reported: 'reported',
 };
@@ -69,8 +78,10 @@ export const phaseLabelMap: Record<AgentPhase, string> = {
 export const statusClassMap: Record<AgentPhase, string> = {
   waiting: 'waiting',
   'walking-out': 'dispatched',
-  'in-room': 'in-room',
+  'entering-room': 'entering',
+  'at-dossier': 'in-room',
   translating: 'translating',
+  'exiting-room': 'exiting',
   returning: 'returning',
   reported: 'reported',
 };
@@ -93,16 +104,31 @@ function buildWalkableGrid(map: GridMapData): boolean[][] {
     }
   }
 
+  // Mark hallway tiles as walkable
   for (const [x, y] of map.hallwayTiles) {
     if (y >= 0 && y < map.gridSize.rows && x >= 0 && x < map.gridSize.cols) {
       grid[y][x] = true;
     }
   }
 
+  // Mark room doors as walkable
   for (const room of Object.keys(map.roomDoors)) {
     const door = map.roomDoors[room];
     if (door && door.gridY >= 0 && door.gridY < map.gridSize.rows) {
       grid[door.gridY][door.gridX] = true;
+    }
+  }
+
+  // Mark room interiors as walkable (for dossier paths)
+  for (const roomLayout of map.layout) {
+    for (let dy = 0; dy < roomLayout.height; dy++) {
+      for (let dx = 0; dx < roomLayout.width; dx++) {
+        const x = roomLayout.gridX + dx;
+        const y = roomLayout.gridY + dy;
+        if (y >= 0 && y < map.gridSize.rows && x >= 0 && x < map.gridSize.cols) {
+          grid[y][x] = true;
+        }
+      }
     }
   }
 
@@ -159,30 +185,51 @@ export function buildAgentConfigs(
 
   return ROOM_ORDER.map((room, idx) => {
     const roomDoor = map.roomDoors[room];
-    const start: GridCell = { x: officeDoor.gridX, y: officeDoor.gridY };
-    const end: GridCell = { x: roomDoor.gridX, y: roomDoor.gridY };
+    const roomDossier = map.roomDossiers[room];
+    
+    const officeStart: GridCell = { x: officeDoor.gridX, y: officeDoor.gridY };
+    const doorCell: GridCell = { x: roomDoor.gridX, y: roomDoor.gridY };
+    const dossierCell: GridCell = { x: roomDossier.gridX, y: roomDossier.gridY };
 
-    const pathOut = bfsPath(grid, start, end);
-    const pathBack = [...pathOut].reverse();
-    const totalSteps = pathOut.length;
-    const walkMs = totalSteps * MS_PER_STEP;
-    const inRoomMs = BASE_ROOM_MS + idx * 350;
-    const translateMs = BASE_TRANSLATE_MS + (idx % 2) * 250;
-    const returnMs = totalSteps * MS_PER_STEP;
-    const debriefMs = BASE_DEBRIEF_MS + idx * 120;
-    const startOffsetMs = idx * 600;
-    const totalMs = startOffsetMs + walkMs + inRoomMs + translateMs + returnMs + debriefMs;
+    // Path: office → room door
+    const pathToRoom = bfsPath(grid, officeStart, doorCell);
+    // Path: room door → dossier (inside room)
+    const pathToDossier = bfsPath(grid, doorCell, dossierCell);
+    // Path: dossier → room door
+    const pathFromDossier = [...pathToDossier].reverse();
+    // Path: room door → office
+    const pathToOffice = [...pathToRoom].reverse();
+
+    const walkToRoomSteps = pathToRoom.length;
+    const enterRoomSteps = pathToDossier.length;
+    const exitRoomSteps = pathFromDossier.length;
+    const returnSteps = pathToOffice.length;
+    const totalSteps = walkToRoomSteps + enterRoomSteps + exitRoomSteps + returnSteps;
+
+    const walkToRoomMs = walkToRoomSteps * MS_PER_STEP;
+    const enterRoomMs = enterRoomSteps * MS_PER_STEP;
+    const atDossierMs = BASE_DOSSIER_MS + idx * 300;
+    const translateMs = BASE_TRANSLATE_MS + (idx % 2) * 200;
+    const exitRoomMs = exitRoomSteps * MS_PER_STEP;
+    const returnMs = returnSteps * MS_PER_STEP;
+    const debriefMs = BASE_DEBRIEF_MS + idx * 100;
+    const startOffsetMs = idx * 800;
+    const totalMs = startOffsetMs + walkToRoomMs + enterRoomMs + atDossierMs + translateMs + exitRoomMs + returnMs + debriefMs;
 
     return {
       room,
       agent: roomAgents[room],
-      pathOut,
-      pathBack,
+      pathToRoom,
+      pathToDossier,
+      pathFromDossier,
+      pathToOffice,
       totalSteps,
       startOffsetMs,
-      walkMs,
-      inRoomMs,
+      walkToRoomMs,
+      enterRoomMs,
+      atDossierMs,
       translateMs,
+      exitRoomMs,
       returnMs,
       debriefMs,
       totalMs,
@@ -214,12 +261,26 @@ export function getLeadPhase(
 export function getAgentPhase(config: AgentConfig, elapsedMs: number): AgentPhase {
   const local = elapsedMs - config.startOffsetMs;
   if (local <= 0) return 'waiting';
-  if (local < config.walkMs) return 'walking-out';
-  if (local < config.walkMs + config.inRoomMs) return 'in-room';
-  if (local < config.walkMs + config.inRoomMs + config.translateMs) return 'translating';
-  if (local < config.walkMs + config.inRoomMs + config.translateMs + config.returnMs) {
-    return 'returning';
-  }
+  
+  let cursor = 0;
+  cursor += config.walkToRoomMs;
+  if (local < cursor) return 'walking-out';
+  
+  cursor += config.enterRoomMs;
+  if (local < cursor) return 'entering-room';
+  
+  cursor += config.atDossierMs;
+  if (local < cursor) return 'at-dossier';
+  
+  cursor += config.translateMs;
+  if (local < cursor) return 'translating';
+  
+  cursor += config.exitRoomMs;
+  if (local < cursor) return 'exiting-room';
+  
+  cursor += config.returnMs;
+  if (local < cursor) return 'returning';
+  
   return 'reported';
 }
 
@@ -231,14 +292,21 @@ export function getRoomCenter(map: GridMapData, room: string): Point {
   return { x: centerX, y: centerY };
 }
 
+export function getDossierPosition(map: GridMapData, room: string): Point {
+  const dossier = map.roomDossiers[room];
+  if (!dossier) return getRoomCenter(map, room);
+  return {
+    x: dossier.gridX * map.cellSize + map.cellSize / 2,
+    y: dossier.gridY * map.cellSize + map.cellSize / 2,
+  };
+}
+
 export function getAgentGridPosition(
   config: AgentConfig,
   elapsedMs: number,
   map: GridMapData,
 ): Point {
   const cellSize = map.cellSize;
-  const officeDoor = map.roomDoors['Detective Office'];
-  const roomDoor = map.roomDoors[config.room];
   const local = elapsedMs - config.startOffsetMs;
 
   const cellToPoint = (cell: GridCell): Point => ({
@@ -246,34 +314,59 @@ export function getAgentGridPosition(
     y: cell.y * cellSize + cellSize / 2,
   });
 
+  const getPathPosition = (path: GridCell[], progress: number): Point => {
+    const stepIdx = Math.min(
+      Math.floor(progress * path.length),
+      path.length - 1,
+    );
+    return cellToPoint(path[Math.max(0, stepIdx)]);
+  };
+
+  const officeDoor = map.roomDoors['Detective Office'];
   const officePoint = cellToPoint({ x: officeDoor.gridX, y: officeDoor.gridY });
-  const roomPoint = cellToPoint({ x: roomDoor.gridX, y: roomDoor.gridY });
+  const dossier = map.roomDossiers[config.room];
+  const dossierPoint = cellToPoint({ x: dossier.gridX, y: dossier.gridY });
 
   if (local <= 0) return officePoint;
 
-  if (local < config.walkMs) {
-    const progress = local / Math.max(config.walkMs, 1);
-    const stepIdx = Math.min(
-      Math.floor(progress * config.pathOut.length),
-      config.pathOut.length - 1,
-    );
-    const cell = config.pathOut[stepIdx];
-    return cellToPoint(cell);
+  let cursor = 0;
+
+  // Walking to room door
+  cursor += config.walkToRoomMs;
+  if (local < cursor) {
+    const progress = (local) / Math.max(config.walkToRoomMs, 1);
+    return getPathPosition(config.pathToRoom, progress);
   }
 
-  if (local < config.walkMs + config.inRoomMs + config.translateMs) {
-    return roomPoint;
+  // Entering room (walking to dossier)
+  const enterStart = cursor;
+  cursor += config.enterRoomMs;
+  if (local < cursor) {
+    const progress = (local - enterStart) / Math.max(config.enterRoomMs, 1);
+    return getPathPosition(config.pathToDossier, progress);
   }
 
-  if (local < config.walkMs + config.inRoomMs + config.translateMs + config.returnMs) {
-    const returnLocal = local - config.walkMs - config.inRoomMs - config.translateMs;
-    const progress = returnLocal / Math.max(config.returnMs, 1);
-    const stepIdx = Math.min(
-      Math.floor(progress * config.pathBack.length),
-      config.pathBack.length - 1,
-    );
-    const cell = config.pathBack[stepIdx];
-    return cellToPoint(cell);
+  // At dossier (reading + translating)
+  cursor += config.atDossierMs;
+  if (local < cursor) return dossierPoint;
+
+  cursor += config.translateMs;
+  if (local < cursor) return dossierPoint;
+
+  // Exiting room (walking back to door)
+  const exitStart = cursor;
+  cursor += config.exitRoomMs;
+  if (local < cursor) {
+    const progress = (local - exitStart) / Math.max(config.exitRoomMs, 1);
+    return getPathPosition(config.pathFromDossier, progress);
+  }
+
+  // Returning to office
+  const returnStart = cursor;
+  cursor += config.returnMs;
+  if (local < cursor) {
+    const progress = (local - returnStart) / Math.max(config.returnMs, 1);
+    return getPathPosition(config.pathToOffice, progress);
   }
 
   return officePoint;

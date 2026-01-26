@@ -204,6 +204,16 @@ h3 {
   margin-top: 2px;
 }
 
+/* Dossier icons */
+.dossier-icon {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  z-index: 3;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+
 /* Agent Sprites */
 .agent-sprite {
   position: absolute;
@@ -235,6 +245,10 @@ h3 {
   background: #6aa5ff;
 }
 
+.agent-sprite.entering .agent-icon {
+  background: #8adf7a;
+}
+
 .agent-sprite.in-room .agent-icon {
   background: #7ef3b4;
 }
@@ -242,6 +256,10 @@ h3 {
 .agent-sprite.translating .agent-icon {
   background: #4fe0c2;
   animation: pulse 0.6s ease-in-out infinite;
+}
+
+.agent-sprite.exiting .agent-icon {
+  background: #c8e07a;
 }
 
 .agent-sprite.returning .agent-icon {
@@ -357,6 +375,11 @@ h3 {
   color: #a3c3ff;
 }
 
+.status.entering {
+  background: #2f4a2c;
+  color: #b8f3a8;
+}
+
 .status.in-room {
   background: #2c4a3d;
   color: #b5f3c8;
@@ -365,6 +388,11 @@ h3 {
 .status.translating {
   background: #2b3f3a;
   color: #9de7d1;
+}
+
+.status.exiting {
+  background: #3a4a2c;
+  color: #d8f3a8;
 }
 
 .status.returning {
