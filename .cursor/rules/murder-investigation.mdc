@@ -1,0 +1,7 @@
+---
+description: Trigger the murder-investigation skill for Clue-style prompts
+alwaysApply: true
+---
+# Murder Investigation Skill Trigger
+
+If the user asks to investigate a murder, solve a Clue-style mystery, or mentions rooms/weapons/suspects, apply the `murder-investigation` skill from `.cursor/skills/murder-investigation/SKILL.md`.

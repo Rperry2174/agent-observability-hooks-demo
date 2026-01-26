@@ -1,0 +1,32 @@
+{
+  "name": "agent-observability-hooks-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clues": "tsx src/cli.ts",
+    "demo": "tsx src/demo.ts",
+    "room:kitchen": "node scripts/room-task.mjs kitchen",
+    "room:library": "node scripts/room-task.mjs library",
+    "room:study": "node scripts/room-task.mjs study",
+    "room:ballroom": "node scripts/room-task.mjs ballroom",
+    "room:conservatory": "node scripts/room-task.mjs conservatory",
+    "murder:seed": "node scripts/murder-seed.mjs",
+    "murder:check": "node scripts/murder-check.mjs",
+    "murder:package": "node scripts/murder-package.mjs",
+    "mansion:walk": "node scripts/walk.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run test && npm run typecheck"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "gridSize": { "cols": 11, "rows": 11 },
+  "cellSize": 44,
+  "rooms": [
+    "Detective Office",
+    "Kitchen",
+    "Library",
+    "Study",
+    "Ballroom",
+    "Conservatory"
+  ],
+  "layout": [
+    { "room": "Detective Office", "gridX": 4, "gridY": 4, "width": 3, "height": 3 },
+    { "room": "Kitchen", "gridX": 0, "gridY": 0, "width": 3, "height": 3 },
+    { "room": "Library", "gridX": 8, "gridY": 0, "width": 3, "height": 3 },
+    { "room": "Study", "gridX": 0, "gridY": 8, "width": 3, "height": 3 },
+    { "room": "Ballroom", "gridX": 4, "gridY": 8, "width": 3, "height": 3 },
+    { "room": "Conservatory", "gridX": 8, "gridY": 8, "width": 3, "height": 3 }
+  ],
+  "roomDoors": {
+    "Detective Office": { "gridX": 5, "gridY": 3 },
+    "Kitchen": { "gridX": 3, "gridY": 1 },
+    "Library": { "gridX": 7, "gridY": 1 },
+    "Study": { "gridX": 3, "gridY": 9 },
+    "Ballroom": { "gridX": 5, "gridY": 7 },
+    "Conservatory": { "gridX": 7, "gridY": 9 }
+  },
+  "hallwayTiles": [
+    [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+    [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
+    [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
+    [3, 3], [4, 3], [5, 3], [6, 3], [7, 3],
+    [0, 3], [1, 3], [2, 3],
+    [8, 3], [9, 3], [10, 3],
+    [3, 4], [3, 5], [3, 6],
+    [7, 4], [7, 5], [7, 6],
+    [3, 7], [4, 7], [5, 7], [6, 7], [7, 7],
+    [0, 7], [1, 7], [2, 7],
+    [8, 7], [9, 7], [10, 7],
+    [3, 8], [3, 9], [3, 10],
+    [7, 8], [7, 9], [7, 10]
+  ]
+}

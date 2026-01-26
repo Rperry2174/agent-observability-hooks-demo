@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionEnd": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh sessionEnd"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolStart"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolEnd"
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolFailure"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh shellStart"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh shellEnd"
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh mcpEnd"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh fileEditEnd"
+      }
+    ],
+    "beforeTabFileRead": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh tabReadStart"
+      }
+    ],
+    "afterTabFileEdit": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh tabEditEnd"
+      }
+    ],
+    "subagentStart": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh subagentStart"
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh subagentStop"
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh thinkingEnd"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh agentResponse"
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh contextCompact"
+      }
+    ],
+    "stop": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh stop"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolStart"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh beforeSubmitPrompt"
+      }
+    ]
+  }
+}
