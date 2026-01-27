@@ -2,6 +2,10 @@
 
 Public demo repo for **agent-runtime-observability**. This project is intentionally small and a little spooky so an AI agent naturally uses a lot of tools, spawns subagents, runs shell commands, reads/edits files, and optionally calls MCP tools.
 
+https://github.com/user-attachments/assets/8df39dc1-315a-46a2-8b9e-c9af0c744ddc
+
+
+
 ## Quick start (standalone)
 
 ```bash
