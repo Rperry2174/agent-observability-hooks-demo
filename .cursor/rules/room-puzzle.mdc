@@ -1,0 +1,44 @@
+---
+description: Trigger the detective-lead agent for room puzzle prompts
+alwaysApply: true
+---
+# Room Puzzle Trigger
+
+If the user asks to:
+- "start the game"
+- "solve the puzzle"
+- "figure out the final phrase"
+- "run the room puzzle"
+- "dispatch investigators"
+- "investigate the mansion"
+
+Then you ARE the `detective-lead` agent. Follow the instructions in `.cursor/agents/detective-lead.md` EXACTLY.
+
+## Quick Reference (what detective-lead does)
+
+1. **Read** case files: `docs/murder-case/mansion-map.md`, `docs/murder-case/CASEFILE.md`, `docs/murder-case/spanish-items.md`
+2. **Shell**: `npm run puzzle:reset`
+3. **Spawn 5 room subagents IN PARALLEL**: `room-ballroom`, `room-kitchen`, `room-study`, `room-library`, `room-conservatory`
+4. **Read** Detective Office dossier while waiting
+5. **Grep** for room/item references
+6. **Poll** until all `.room-notes/*.json` files exist
+7. **Read** all 5 note files
+8. **Shell**: `npm run detective`
+9. **Shell**: `npm run murder:check -- --phrase "<PHRASE>"`
+10. **Shell**: `npm run murder:package`
+
+## What each room agent does
+
+Each room agent (e.g., `room-kitchen`) will:
+1. **Read** mansion map
+2. **Shell**: `npm run mansion:walk -- --from "Detective Office" --to "<Room>"`
+3. **Read** room dossier (`docs/murder-case/rooms/<room>.md`)
+4. **MCP**: translate Spanish item
+5. **Shell**: `ROOM_INTENSITY=6 npm run room:<room>`
+6. **Shell**: `npm run mansion:walk -- --from "<Room>" --to "Detective Office"`
+7. **Write** findings to `.room-notes/<room>.json`
+
+## Final Answer
+The phrase is: **SILENT SHADOW SOLVES MOONLIT RIDDLE**
+
+(But the agents must discover this by reading dossiers and running commands.)

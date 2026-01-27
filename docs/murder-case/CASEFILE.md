@@ -1,7 +1,7 @@
 # Case File: The Manor Murder
 
-Case ID: case-demo-384392
-Generated: 2026-01-26T22:04:52.109Z
+Case ID: case-1769469133206-519255
+Generated: 2026-01-26T23:12:13.206Z
 
 Use `npm run murder:seed` to generate a new case.
 

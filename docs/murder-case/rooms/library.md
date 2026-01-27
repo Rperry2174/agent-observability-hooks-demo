@@ -1,10 +1,10 @@
 # Room Dossier: Library
 
-- Color note: red
-- Suspect seen: Sofia
-- Item noted (Spanish): veneno
-- Word order: 2
-- Word: detective
+- Color note: black
+- Suspect seen: Lola
+- Item noted (Spanish): cuchillo
+- Word order: 4
+- Word: MOONLIT
 
 Observations:
 - A ledger was left open on the desk.

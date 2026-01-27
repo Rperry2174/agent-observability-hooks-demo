@@ -58,6 +58,70 @@ Constraints:
 - Use only Agent tools (no Tab completions).
 - Keep changes minimal and focused on the failing tests.
 
+## ROOM PUZZLE PROMPT (agents "travel" + report to detective)
+
+If you want a run that is mostly tool spans (sleep/IO/CPU/subprocess) and easy to parallelize across subagents, just say:
+
+> **Start the game and figure out the final phrase.**
+
+That's it. The `detective-lead` agent knows to:
+1. Reset the puzzle
+2. Spawn five room investigator subagents in parallel
+3. Wait for all investigators to return with their clues
+4. Compile and announce the final phrase
+
+Each room agent:
+1. Reads the mansion map
+2. Walks to the room (shell command)
+3. Reads the room dossier
+4. Translates Spanish items (MCP call)
+5. Runs the room task (CPU/IO work)
+6. Walks back (shell command)
+7. Writes findings to `.room-notes/<room>.json`
+
+**Final phrase: SILENT SHADOW SOLVES MOONLIT RIDDLE**
+
+> **Note:** The puzzle answer is static. Do NOT run `npm run murder:seed` as it will regenerate random dossiers and break the alignment between the web UI, agents, and room tasks.
+
+### Manual run (without agents)
+```bash
+npm run puzzle:reset
+ROOM_INTENSITY=6 npm run room:ballroom &
+ROOM_INTENSITY=6 npm run room:kitchen &
+ROOM_INTENSITY=6 npm run room:study &
+ROOM_INTENSITY=6 npm run room:library &
+ROOM_INTENSITY=6 npm run room:conservatory &
+wait
+npm run detective
+```
+
+## MCP Setup (for translation)
+
+This repo includes a simple `mansion-translator` MCP server for Spanish-English translation.
+
+### Option 1: Project-level MCP (already configured)
+The `.cursor/mcp.json` file configures the MCP server for this project. Restart Cursor to pick it up.
+
+### Option 2: Global MCP
+Add to `~/.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "mansion-translator": {
+      "command": "node",
+      "args": ["/path/to/agent-observability-hooks-demo/mcp-servers/mansion-translator/index.mjs"]
+    }
+  }
+}
+```
+
+### Option 3: Shell fallback (no MCP setup needed)
+Agents can use the shell command instead:
+```bash
+npm run translate -- <spanish_word>
+npm run translate  # list all vocabulary
+```
+
 ## Notes
 
 - This repo intentionally contains a bug in `src/checksum.ts`.

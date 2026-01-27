@@ -9,6 +9,18 @@
     "Ballroom",
     "Conservatory"
   ],
+  "edges": [
+    { "from": "Detective Office", "to": "Kitchen", "steps": 12 },
+    { "from": "Detective Office", "to": "Library", "steps": 12 },
+    { "from": "Detective Office", "to": "Study", "steps": 12 },
+    { "from": "Detective Office", "to": "Ballroom", "steps": 6 },
+    { "from": "Detective Office", "to": "Conservatory", "steps": 12 },
+    { "from": "Kitchen", "to": "Study", "steps": 12 },
+    { "from": "Kitchen", "to": "Library", "steps": 12 },
+    { "from": "Library", "to": "Conservatory", "steps": 12 },
+    { "from": "Study", "to": "Ballroom", "steps": 6 },
+    { "from": "Ballroom", "to": "Conservatory", "steps": 6 }
+  ],
   "layout": [
     { "room": "Detective Office", "gridX": 6, "gridY": 6, "width": 3, "height": 3 },
     { "room": "Kitchen", "gridX": 0, "gridY": 0, "width": 3, "height": 3 },

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "mansion-translator": {
+      "command": "node",
+      "args": [
+        "/Users/rperry/Desktop/projects/agent-observability-hooks-demo/mcp-servers/mansion-translator/index.mjs"
+      ]
+    }
+  }
+}

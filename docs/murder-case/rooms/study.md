@@ -1,10 +1,10 @@
 # Room Dossier: Study
 
-- Color note: purple
-- Suspect seen: Bruno
-- Item noted (Spanish): cuchillo
-- Word order: 3
-- Word: solves
+- Color note: blue
+- Suspect seen: Sofia
+- Item noted (Spanish): pistola
+- Word order: 5
+- Word: RIDDLE
 
 Observations:
 - A stack of letters was tied with twine.

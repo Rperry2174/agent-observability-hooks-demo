@@ -4,12 +4,27 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 
+// Steps from Detective Office (from mansion-map.json edges)
+// MS_PER_STEP matches web UI simulation (200ms per step)
+const MS_PER_STEP = 200;
+
 const ROOM_CONFIG = {
-  kitchen: { weight: 1, dossier: 'docs/murder-case/rooms/kitchen.md' },
-  library: { weight: 2, dossier: 'docs/murder-case/rooms/library.md' },
-  study: { weight: 3, dossier: 'docs/murder-case/rooms/study.md' },
-  ballroom: { weight: 4, dossier: 'docs/murder-case/rooms/ballroom.md' },
-  conservatory: { weight: 5, dossier: 'docs/murder-case/rooms/conservatory.md' },
+  kitchen: { steps: 12, dossier: 'docs/murder-case/rooms/kitchen.md' },
+  library: { steps: 12, dossier: 'docs/murder-case/rooms/library.md' },
+  study: { steps: 12, dossier: 'docs/murder-case/rooms/study.md' },
+  ballroom: { steps: 6, dossier: 'docs/murder-case/rooms/ballroom.md' },
+  conservatory: { steps: 12, dossier: 'docs/murder-case/rooms/conservatory.md' },
+};
+
+// Static puzzle “answer” assembled by the detective (ordered by `order`).
+// Each room “finds” one word and a number.
+// Clues MUST match the dossier files in docs/murder-case/rooms/*.md
+const ROOM_CLUES = {
+  conservatory: { order: 1, word: 'SILENT' },
+  ballroom: { order: 2, word: 'SHADOW' },
+  kitchen: { order: 3, word: 'SOLVES' },
+  library: { order: 4, word: 'MOONLIT' },
+  study: { order: 5, word: 'RIDDLE' },
 };
 
 function sleep(ms) {
@@ -77,6 +92,17 @@ async function runChildWait(ms, label) {
   });
 }
 
+async function echoLoud(message) {
+  await new Promise((resolve, reject) => {
+    const child = spawn('echo', [message], { stdio: 'inherit' });
+    child.once('error', reject);
+    child.once('exit', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`echo exit code ${code ?? 'null'}`));
+    });
+  });
+}
+
 async function main() {
   const room = process.argv[2];
   if (!room || !ROOM_CONFIG[room]) {
@@ -85,14 +111,24 @@ async function main() {
   }
 
   const intensity = clampInt(Number(process.env.ROOM_INTENSITY ?? '3'), 1, 10);
-  const { weight, dossier } = ROOM_CONFIG[room];
+  const { steps, dossier } = ROOM_CONFIG[room];
   const seed = hashString(`${room}:${intensity}`);
   const rng = mulberry32(seed);
 
-  const totalMs = 3000 + intensity * 1000 + weight * 700;
-  const ioMs = Math.round(totalMs * 0.22);
-  const cpuMs = Math.round(totalMs * 0.58);
-  const waitMs = Math.max(600, totalMs - ioMs - cpuMs);
+  const clue = ROOM_CLUES[room];
+  if (!clue) {
+    console.error(`Missing clue config for room: ${room}`);
+    process.exit(1);
+  }
+
+  // Travel time based on actual map distance (matches web UI)
+  const travelOutMs = steps * MS_PER_STEP;
+  const travelBackMs = steps * MS_PER_STEP;
+
+  // Investigation time scales with intensity
+  const investigationMs = 2000 + intensity * 1000;
+  const ioMs = Math.round(investigationMs * 0.35);
+  const cpuMs = Math.round(investigationMs * 0.65);
 
   const baseDir = process.cwd();
   const files = [
@@ -100,24 +136,57 @@ async function main() {
     path.join(baseDir, 'docs/murder-case/spanish-items.md'),
     path.join(baseDir, dossier),
   ];
+  const notesDir = path.join(baseDir, '.room-notes');
+  const notePath = path.join(notesDir, `${room}.json`);
+
+  const totalMs = travelOutMs + ioMs + cpuMs + travelBackMs;
 
   console.log(`Room task: ${room}`);
   console.log(`Intensity: ${intensity}`);
+  console.log(`Distance: ${steps} steps (${travelOutMs}ms each way)`);
   console.log(`Target duration: ${totalMs}ms`);
   console.log('');
 
-  console.log('Stage 1/3: Gathering notes (IO)…');
+  console.log('Stage 1/4: Traveling to the room…');
+  await runChildWait(travelOutMs, `${room} (travel out)`);
+  console.log('');
+
+  console.log('Stage 2/4: Gathering notes (IO)…');
   const io = await burnIo(ioMs, files, rng);
   console.log(`- ${io.reads} reads in ${Math.round(io.elapsedMs)}ms`);
   console.log('');
 
-  console.log('Stage 2/3: Analyzing evidence (CPU)…');
+  console.log('Stage 3/4: Analyzing evidence (CPU)…');
   const cpu = burnCpu(cpuMs, `${room}|${seed}`);
   console.log(`- ${cpu.hashes} hashes in ${Math.round(cpu.elapsedMs)}ms`);
   console.log('');
 
-  console.log('Stage 3/3: Listening for footsteps (wait)…');
-  await runChildWait(waitMs, room);
+  console.log('Clue found!');
+  console.log(`- Word: ${clue.word}`);
+  console.log(`- Number: ${clue.order}`);
+  await echoLoud(`[${room.toUpperCase()}] ${clue.order} ${clue.word}`);
+  console.log('');
+
+  await fs.mkdir(notesDir, { recursive: true });
+  await fs.writeFile(
+    notePath,
+    JSON.stringify(
+      {
+        room,
+        order: clue.order,
+        word: clue.word,
+        intensity,
+        generatedAt: new Date().toISOString(),
+      },
+      null,
+      2
+    )
+  );
+  console.log(`Wrote note: ${path.relative(baseDir, notePath)}`);
+  console.log('');
+
+  console.log('Stage 4/4: Returning to the detective…');
+  await runChildWait(travelBackMs, `${room} (travel back)`);
 }
 
 await main();

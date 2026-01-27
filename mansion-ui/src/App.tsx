@@ -331,6 +331,36 @@ export default function App() {
                 </div>
               );
             })}
+
+            {/* Detective agent at the Detective Office */}
+            {(() => {
+              const officeLayout = layout.find((r) => r.room === 'Detective Office');
+              if (!officeLayout) return null;
+              const cx = (officeLayout.gridX + officeLayout.width / 2) * cellSize;
+              const cy = (officeLayout.gridY + officeLayout.height / 2) * cellSize + 28;
+              return (
+                <>
+                  <div
+                    className={`agent-sprite detective ${allReported ? 'complete' : ''}`}
+                    style={{ left: cx, top: cy }}
+                    title="Lead Detective"
+                  >
+                    <span className="agent-icon detective-icon">🔍</span>
+                  </div>
+                  {allReported && solution && (
+                    <div
+                      className="speech-bubble detective-bubble"
+                      style={{
+                        left: cx,
+                        top: cy - 44,
+                      }}
+                    >
+                      {solution.phrase}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </section>
 

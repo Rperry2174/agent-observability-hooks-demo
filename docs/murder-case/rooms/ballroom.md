@@ -1,10 +1,10 @@
 # Room Dossier: Ballroom
 
-- Color note: green
-- Suspect seen: Lola
-- Item noted (Spanish): tuberia
-- Word order: 4
-- Word: final
+- Color note: blue
+- Suspect seen: Camila
+- Item noted (Spanish): veneno
+- Word order: 2
+- Word: SHADOW
 
 Observations:
 - The piano lid was open.

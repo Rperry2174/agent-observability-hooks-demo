@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+mcp-servers/*/node_modules/
 .pnp/
 .pnp.js
 
@@ -42,3 +43,6 @@ coverage/
 
 # Generated case files (regenerate with npm run murder:seed)
 docs/murder-case/current-case.json
+
+# Generated room notes (puzzle run artifacts)
+.room-notes/

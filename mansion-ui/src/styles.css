@@ -270,6 +270,49 @@ h3 {
   background: #f1a3ff;
 }
 
+/* Detective agent */
+.agent-sprite.detective .agent-icon {
+  background: #f8e3a1;
+  font-size: 0.9rem;
+}
+
+.agent-sprite.detective.complete .agent-icon {
+  background: #7ef3b4;
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.detective-icon {
+  filter: none !important;
+}
+
+.detective-bubble {
+  background: #7ef3b4 !important;
+  color: #1b1a20 !important;
+  font-size: 0.75rem !important;
+  max-width: 200px;
+  white-space: normal !important;
+  text-align: center;
+  animation: fadeInBounce 0.5s ease-out;
+}
+
+.detective-bubble::after {
+  border-color: #7ef3b4 transparent transparent transparent !important;
+}
+
+@keyframes fadeInBounce {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.8);
+  }
+  60% {
+    transform: translate(-50%, -100%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1);
+  }
+}
+
 @keyframes pulse {
   0%,
   100% {

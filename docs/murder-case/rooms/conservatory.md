@@ -1,10 +1,10 @@
 # Room Dossier: Conservatory
 
-- Color note: white
-- Suspect seen: Camila
-- Item noted (Spanish): pistola
-- Word order: 5
-- Word: riddle
+- Color note: yellow
+- Suspect seen: Bruno
+- Item noted (Spanish): cuerda
+- Word order: 1
+- Word: SILENT
 
 Observations:
 - A humidifier was still running.

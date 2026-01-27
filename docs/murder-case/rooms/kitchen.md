@@ -1,10 +1,10 @@
 # Room Dossier: Kitchen
 
-- Color note: blue
+- Color note: purple
 - Suspect seen: Carlos
-- Item noted (Spanish): cuerda
-- Word order: 1
-- Word: silent
+- Item noted (Spanish): tuberia
+- Word order: 3
+- Word: SOLVES
 
 Observations:
 - A kettle was still warm.
