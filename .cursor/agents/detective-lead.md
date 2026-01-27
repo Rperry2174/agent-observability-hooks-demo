@@ -57,32 +57,21 @@ You need exactly 5 JSON files. If fewer exist, wait and check again:
 sleep 5 && ls -la .room-notes/
 ```
 
-### 5. Compile the final phrase
-Once all 5 notes exist, read each note file to gather the words:
-- `.room-notes/ballroom.json`
-- `.room-notes/kitchen.json`
-- `.room-notes/study.json`
-- `.room-notes/library.json`
-- `.room-notes/conservatory.json`
+### 5. Spawn the case-compiler agent to compile results
+Once all 5 notes exist, spawn the `case-compiler` subagent to compile the final phrase.
 
-Sort the words by their `order` number (1, 2, 3, 4, 5) and assemble the phrase.
+DO NOT run `npm run detective` yourself. Spawn the `case-compiler` agent and let it:
+1. Read all the note files
+2. Read the CASEFILE.md template
+3. Sort words by order number
+4. Assemble and verify the phrase
+5. Run the murder:check command
+6. Return the final determination
 
-Then run the detective command to verify:
-```bash
-npm run detective
-```
+### 6. Spawn the forensics-packager agent
+After the case-compiler returns, spawn the `forensics-packager` subagent to package the final report.
 
-### 6. Verify the solution
-Run the murder check with your compiled phrase:
-```bash
-npm run murder:check -- --phrase "<YOUR COMPILED PHRASE>"
-```
-
-### 7. Package the report
-Run the forensics packager:
-```bash
-npm run murder:package
-```
+DO NOT run `npm run murder:package` yourself. Let the forensics-packager agent handle it.
 
 ### 8. Final Report
 Output:

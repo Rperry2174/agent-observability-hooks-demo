@@ -30,23 +30,22 @@ Extract these fields from the dossier:
 - Word order — this is the NUMBER for ordering
 - Word — this is the WORD you found
 
-### 4. Translate the Spanish item
-The dossier contains a Spanish item name (e.g., "cuerda", "veneno"). Translate it using ONE of these methods:
+### 4. Translate the Spanish item using MCP (REQUIRED)
+The dossier contains a Spanish item name (e.g., "cuerda", "veneno"). You MUST use the MCP tool to translate it.
 
-**Option A (preferred): Use the `mansion-translator` MCP tool**
-Call the MCP tool `translate` with the Spanish word:
+**Call the `mansion-translator` MCP server:**
+- Server: `mansion-translator`
+- Tool: `translate`
+- Arguments: `{ "word": "<spanish_item_from_dossier>" }`
+
+Example: If the dossier says "Item noted (Spanish): cuerda", call:
 ```
-MCP server: mansion-translator
+Server: mansion-translator
 Tool: translate
-Arguments: { "word": "<spanish_item>" }
+Arguments: { "word": "cuerda" }
 ```
 
-**Option B (fallback): Use the shell command**
-```bash
-npm run translate -- <spanish_item>
-```
-
-You MUST perform the translation step (either MCP or shell) to generate a tool span for observability.
+DO NOT use `npm run translate`. You MUST use the MCP tool to generate an MCP span for observability.
 
 ### 5. Run the room investigation task
 Run this shell command (it does CPU/IO work and takes time):
