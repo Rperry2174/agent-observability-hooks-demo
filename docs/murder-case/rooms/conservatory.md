@@ -1,10 +1,9 @@
 # Room Dossier: Conservatory
 
-- Color note: yellow
+- Color note: green
 - Suspect seen: Bruno
-- Item noted (Spanish): cuerda
+- Item noted (Spanish): silencioso
 - Word order: 1
-- Word: SILENT
 
 Observations:
 - A humidifier was still running.

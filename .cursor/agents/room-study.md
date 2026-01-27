@@ -26,24 +26,26 @@ Read file: `docs/murder-case/rooms/study.md`
 Extract these fields from the dossier:
 - Color note
 - Suspect seen
-- Item noted (Spanish) — you will translate this
+- Item noted (Spanish) — you MUST translate this to get the clue word
 - Word order — this is the NUMBER for ordering
-- Word — this is the WORD you found
 
-### 4. Translate the Spanish item using MCP (REQUIRED)
-The dossier contains a Spanish item name (e.g., "pistola", "cuchillo"). You MUST use the MCP tool to translate it.
+**IMPORTANT:** There is NO "Word" field in the dossier. The clue word IS the translated Spanish item.
+
+### 4. Translate the Spanish item using MCP (REQUIRED - THIS IS THE CLUE WORD)
+The dossier contains a Spanish word (e.g., "acertijo", "iluminado"). You MUST use the MCP tool to translate it. **The translated English word IS your clue word.**
 
 **Call the `mansion-translator` MCP server:**
-- Server: `mansion-translator`
+- Server: `project-0-agent-observability-hooks-demo-mansion-translator`
 - Tool: `translate`
 - Arguments: `{ "word": "<spanish_item_from_dossier>" }`
 
-Example: If the dossier says "Item noted (Spanish): pistola", call:
+Example: If the dossier says "Item noted (Spanish): acertijo", call:
 ```
-Server: mansion-translator
+Server: project-0-agent-observability-hooks-demo-mansion-translator
 Tool: translate
-Arguments: { "word": "pistola" }
+Arguments: { "word": "acertijo" }
 ```
+Result: "riddle" — this IS your clue word (use uppercase: RIDDLE)
 
 DO NOT use `npm run translate`. You MUST use the MCP tool to generate an MCP span for observability.
 

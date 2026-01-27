@@ -2,9 +2,8 @@
 
 - Color note: blue
 - Suspect seen: Camila
-- Item noted (Spanish): veneno
+- Item noted (Spanish): sombra
 - Word order: 2
-- Word: SHADOW
 
 Observations:
 - The piano lid was open.

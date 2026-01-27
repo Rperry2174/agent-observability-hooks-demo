@@ -3,7 +3,6 @@ import path from 'node:path';
 
 const ROOMS = ['Kitchen', 'Library', 'Study', 'Ballroom', 'Conservatory'];
 const SUSPECTS = ['Lola', 'Carlos', 'Sofia', 'Bruno', 'Camila'];
-const WEAPONS = ['cuchillo', 'pistola', 'cuerda', 'tuberia', 'veneno'];
 const COLORS = ['blue', 'red', 'yellow', 'purple', 'orange', 'white', 'black', 'green'];
 
 const OBSERVATIONS = {
@@ -29,13 +28,24 @@ const OBSERVATIONS = {
   ],
 };
 
-const WORD_SLOTS = [
-  ['silent', 'restless', 'hidden', 'midnight', 'forgotten'],
-  ['detective', 'shadow', 'caretaker', 'whisper', 'lantern'],
-  ['solves', 'guards', 'reveals', 'untangles', 'surrounds'],
-  ['final', 'secret', 'forgotten', 'moonlit', 'ancient'],
-  ['riddle', 'truth', 'cipher', 'pattern', 'memory'],
-];
+// Fixed Spanish items that form the puzzle phrase when translated
+// The word IS the translated Spanish item - no separate "Word" field!
+const ROOM_CLUES = {
+  Conservatory: { spanishItem: 'silencioso', wordOrder: 1 }, // → SILENT
+  Ballroom: { spanishItem: 'sombra', wordOrder: 2 },         // → SHADOW
+  Kitchen: { spanishItem: 'resuelve', wordOrder: 3 },        // → SOLVES
+  Library: { spanishItem: 'iluminado', wordOrder: 4 },       // → MOONLIT
+  Study: { spanishItem: 'acertijo', wordOrder: 5 },          // → RIDDLE
+};
+
+// Translation dictionary (must match MCP translator)
+const SPANISH_TO_ENGLISH = {
+  silencioso: 'SILENT',
+  sombra: 'SHADOW',
+  resuelve: 'SOLVES',
+  iluminado: 'MOONLIT',
+  acertijo: 'RIDDLE',
+};
 
 function hashString(input) {
   let hash = 2166136261;
@@ -71,14 +81,14 @@ function pick(arr, rng) {
 }
 
 async function writeRoomDossier(baseDir, room, data) {
+  // NOTE: No "Word:" field - the word IS the translated Spanish item!
   const lines = [
     `# Room Dossier: ${room}`,
     '',
     `- Color note: ${data.color}`,
     `- Suspect seen: ${data.suspect}`,
-    `- Item noted (Spanish): ${data.weapon}`,
+    `- Item noted (Spanish): ${data.spanishItem}`,
     `- Word order: ${data.wordOrder}`,
-    `- Word: ${data.word}`,
     '',
     'Observations:',
     ...data.observations.map((line) => `- ${line}`),
@@ -102,45 +112,46 @@ async function main() {
   const seed = hashString(seedInput);
   const rng = mulberry32(seed);
 
+  // Shuffle suspects and colors for variety (but clues are fixed)
   const suspects = shuffle(SUSPECTS, rng);
-  const weapons = shuffle(WEAPONS, rng);
-  const wordOrders = shuffle([1, 2, 3, 4, 5], rng);
 
   const roomData = {};
   for (const room of ROOMS) {
     const suspect = suspects[ROOMS.indexOf(room)];
-    const weapon = weapons[ROOMS.indexOf(room)];
-    const wordOrder = wordOrders[ROOMS.indexOf(room)];
-    const word = pick(WORD_SLOTS[wordOrder - 1], rng);
     const color = pick(COLORS, rng);
+    const clue = ROOM_CLUES[room];
 
     roomData[room] = {
       room,
       suspect,
-      weapon,
+      spanishItem: clue.spanishItem,
       color,
-      wordOrder,
-      word,
+      wordOrder: clue.wordOrder,
       observations: OBSERVATIONS[room],
     };
   }
 
   const template = 'The [1] [2] [3] the [4] [5].';
+  
+  // Build solution by translating Spanish items
   const orderedWords = Object.values(roomData)
     .map((entry) => ({
       order: entry.wordOrder,
-      word: entry.word,
+      spanishItem: entry.spanishItem,
+      word: SPANISH_TO_ENGLISH[entry.spanishItem],
       room: entry.room,
     }))
     .sort((a, b) => a.order - b.order);
+  
   const phrase = orderedWords.reduce(
     (acc, entry) => acc.replace(new RegExp(`\\[${entry.order}\\]`, 'g'), entry.word),
     template,
   );
 
   const clues = [
-    'Each room dossier includes a Word order number and Word.',
-    'Collect every room word only after the agents return to the Detective Office.',
+    'Each room dossier includes a Word order number and a Spanish item.',
+    'Translate the Spanish item using the MCP translator to get the English word.',
+    'Collect every translated word only after the agents return to the Detective Office.',
     'Sort the words by Word order (1..5).',
     'Fill the template using the ordered words.',
     'The completed phrase is the winning answer.',
@@ -190,7 +201,8 @@ async function main() {
     ...ROOMS.map((room) => `- ${room}`),
     '',
     '## Notes',
-    '- Weapon/item names in dossiers are written in Spanish.',
+    '- Item names in dossiers are written in Spanish.',
+    '- You MUST translate Spanish items using the MCP translator to get the clue words.',
     '- Apply clues strictly in numerical order (1..5).',
     '- Use the mansion map to simulate walking between rooms.',
     '- Do not open `docs/murder-case/current-case.json` during the investigation.',
@@ -211,9 +223,9 @@ async function main() {
 
   console.log(`Generated case ${caseId}`);
   if (args.has('reveal')) {
-    console.log(`Solution: ${solution.suspect} with ${solution.weapon} in ${solution.room}`);
+    console.log(`Solution: ${phrase}`);
   } else {
-    console.log('Solution: [hidden]');
+    console.log('Solution: [hidden - translate Spanish items to discover]');
   }
 }
 

@@ -8,12 +8,12 @@ import {
 
 // Spanish-English dictionary for mansion items
 const DICTIONARY = {
-  // Weapons/items from the mansion puzzle
-  cuchillo: 'knife',
-  pistola: 'pistol',
-  cuerda: 'rope',
-  tuberia: 'lead pipe',
-  veneno: 'poison',
+  // Clue words for the puzzle (these form the final phrase)
+  silencioso: 'silent',
+  sombra: 'shadow',
+  resuelve: 'solves',
+  iluminado: 'moonlit',
+  acertijo: 'riddle',
   // Additional common words
   puerta: 'door',
   ventana: 'window',

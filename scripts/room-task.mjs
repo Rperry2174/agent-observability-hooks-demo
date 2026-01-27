@@ -16,15 +16,15 @@ const ROOM_CONFIG = {
   conservatory: { steps: 12, dossier: 'docs/murder-case/rooms/conservatory.md' },
 };
 
-// Static puzzle “answer” assembled by the detective (ordered by `order`).
-// Each room “finds” one word and a number.
-// Clues MUST match the dossier files in docs/murder-case/rooms/*.md
-const ROOM_CLUES = {
-  conservatory: { order: 1, word: 'SILENT' },
-  ballroom: { order: 2, word: 'SHADOW' },
-  kitchen: { order: 3, word: 'SOLVES' },
-  library: { order: 4, word: 'MOONLIT' },
-  study: { order: 5, word: 'RIDDLE' },
+// Word order for each room (matches dossier files)
+// The actual WORD must be obtained by translating the Spanish item in the dossier
+// using the MCP translator - there is no hardcoded word here!
+const ROOM_ORDER = {
+  conservatory: 1,
+  ballroom: 2,
+  kitchen: 3,
+  library: 4,
+  study: 5,
 };
 
 function sleep(ms) {
@@ -115,9 +115,9 @@ async function main() {
   const seed = hashString(`${room}:${intensity}`);
   const rng = mulberry32(seed);
 
-  const clue = ROOM_CLUES[room];
-  if (!clue) {
-    console.error(`Missing clue config for room: ${room}`);
+  const order = ROOM_ORDER[room];
+  if (order === undefined) {
+    console.error(`Missing order config for room: ${room}`);
     process.exit(1);
   }
 
@@ -136,8 +136,6 @@ async function main() {
     path.join(baseDir, 'docs/murder-case/spanish-items.md'),
     path.join(baseDir, dossier),
   ];
-  const notesDir = path.join(baseDir, '.room-notes');
-  const notePath = path.join(notesDir, `${room}.json`);
 
   const totalMs = travelOutMs + ioMs + cpuMs + travelBackMs;
 
@@ -161,32 +159,17 @@ async function main() {
   console.log(`- ${cpu.hashes} hashes in ${Math.round(cpu.elapsedMs)}ms`);
   console.log('');
 
-  console.log('Clue found!');
-  console.log(`- Word: ${clue.word}`);
-  console.log(`- Number: ${clue.order}`);
-  await echoLoud(`[${room.toUpperCase()}] ${clue.order} ${clue.word}`);
-  console.log('');
-
-  await fs.mkdir(notesDir, { recursive: true });
-  await fs.writeFile(
-    notePath,
-    JSON.stringify(
-      {
-        room,
-        order: clue.order,
-        word: clue.word,
-        intensity,
-        generatedAt: new Date().toISOString(),
-      },
-      null,
-      2
-    )
-  );
-  console.log(`Wrote note: ${path.relative(baseDir, notePath)}`);
+  console.log('Investigation complete!');
+  console.log(`- Word order: ${order}`);
+  console.log('- Word: <translate the Spanish item from the dossier using MCP>');
+  await echoLoud(`[${room.toUpperCase()}] Order: ${order} - Translate Spanish item to get word`);
   console.log('');
 
   console.log('Stage 4/4: Returning to the detective…');
   await runChildWait(travelBackMs, `${room} (travel back)`);
+  console.log('');
+
+  console.log('NOTE: Agent must write findings to .room-notes/ after translating the Spanish item.');
 }
 
 await main();

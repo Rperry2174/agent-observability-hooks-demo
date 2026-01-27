@@ -33,12 +33,18 @@ Each room agent (e.g., `room-kitchen`) will:
 1. **Read** mansion map
 2. **Shell**: `npm run mansion:walk -- --from "Detective Office" --to "<Room>"`
 3. **Read** room dossier (`docs/murder-case/rooms/<room>.md`)
-4. **MCP**: translate Spanish item
+4. **MCP**: translate Spanish item → THIS IS THE CLUE WORD (required!)
 5. **Shell**: `ROOM_INTENSITY=6 npm run room:<room>`
 6. **Shell**: `npm run mansion:walk -- --from "<Room>" --to "Detective Office"`
-7. **Write** findings to `.room-notes/<room>.json`
+7. **Write** findings to `.room-notes/<room>.json` (must include translated word!)
 
-## Final Answer
-The phrase is: **SILENT SHADOW SOLVES MOONLIT RIDDLE**
+## Critical: Translation IS the puzzle
 
-(But the agents must discover this by reading dossiers and running commands.)
+The room dossiers do NOT contain a "Word:" field. The clue word IS the translated Spanish item:
+- silencioso → SILENT
+- sombra → SHADOW
+- resuelve → SOLVES
+- iluminado → MOONLIT
+- acertijo → RIDDLE
+
+Agents MUST use the MCP translator to get the word. There is no other way.
