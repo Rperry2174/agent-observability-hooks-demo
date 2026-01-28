@@ -46,3 +46,6 @@ docs/murder-case/current-case.json
 
 # Generated room notes (puzzle run artifacts)
 .room-notes/
+
+# Agent Observability traces
+.agent-runtime-observability/
