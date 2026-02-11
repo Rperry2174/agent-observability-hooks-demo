@@ -87,7 +87,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "demo_stage_duration_ms_sum",
+          "expr": "demo_stage_duration_ms_milliseconds_sum",
           "legendFormat": "{{stage}}",
           "refId": "A"
         }

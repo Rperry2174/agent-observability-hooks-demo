@@ -73,7 +73,7 @@ Open **http://localhost:3000** and:
   overview with trace search, stage duration charts, CPU hash counters, and live logs.
 - **Explore → Tempo**: Search traces by `service.name = haunted-repo-demo`. Click any trace
   to see the waterfall view with spans for each demo stage (filesystem, CPU, subprocess, puzzle).
-- **Explore → Prometheus**: Query metrics like `demo_stage_duration_ms_sum`,
+- **Explore → Prometheus**: Query metrics like `demo_stage_duration_ms_milliseconds_sum`,
   `demo_cpu_hashes_total`, `demo_fs_files_read`, `demo_fs_bytes_read`.
 - **Explore → Loki**: Query logs with `{service_name="haunted-repo-demo"}` to see structured
   log records for each stage.
