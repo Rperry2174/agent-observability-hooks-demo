@@ -23,27 +23,19 @@
       },
       "gridPos": { "h": 10, "w": 24, "x": 0, "y": 1 },
       "id": 1,
-      "options": {
-        "query": ""
-      },
+      "options": {},
       "targets": [
         {
           "datasource": { "type": "tempo", "uid": "tempo" },
-          "queryType": "traceqlSearch",
+          "queryType": "traceql",
+          "query": "{resource.service.name = \"haunted-repo-demo\"}",
           "limit": 20,
-          "filters": [
-            {
-              "id": "service-name",
-              "tag": "service.name",
-              "operator": "=",
-              "value": ["haunted-repo-demo"],
-              "scope": "resource"
-            }
-          ]
+          "tableType": "traces",
+          "refId": "A"
         }
       ],
       "title": "Recent Traces",
-      "type": "traces"
+      "type": "table"
     },
     {
       "collapsed": false,
