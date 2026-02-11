@@ -49,3 +49,6 @@ docs/murder-case/current-case.json
 
 # Agent Observability traces
 .agent-runtime-observability/
+
+# Grafana local data
+grafana-data/

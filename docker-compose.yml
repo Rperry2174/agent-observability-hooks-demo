@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  grafana-otel:
+    image: grafana/otel-lgtm:latest
+    container_name: haunted-repo-grafana
+    ports:
+      - "3000:3000"   # Grafana UI
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning/dashboards:/otel-lgtm/grafana/conf/provisioning/dashboards
+      - grafana-data:/data
+
+volumes:
+  grafana-data:
