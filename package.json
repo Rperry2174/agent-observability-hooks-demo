@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "clues": "tsx src/cli.ts",
+    "clues:otel": "OTEL_TRACES_EXPORTER=console tsx src/cli.ts",
     "demo": "tsx src/demo.ts",
+    "demo:otel": "OTEL_TRACES_EXPORTER=console tsx src/demo.ts",
     "room:kitchen": "node scripts/room-task.mjs kitchen",
     "room:library": "node scripts/room-task.mjs library",
     "room:study": "node scripts/room-task.mjs study",
@@ -31,5 +33,11 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
+    "@opentelemetry/sdk-node": "^0.211.0",
+    "@opentelemetry/sdk-trace-base": "^2.5.0"
   }
 }
