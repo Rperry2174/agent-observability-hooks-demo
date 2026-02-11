@@ -30,6 +30,31 @@ You can scale it up/down:
 DEMO_INTENSITY=8 npm run demo
 ```
 
+## OpenTelemetry (built-in)
+
+The demo now initializes OpenTelemetry in the CLI entrypoints (`src/demo.ts` and `src/cli.ts`).
+
+Quick start with console spans:
+
+```bash
+npm run demo:otel
+npm run clues:otel
+```
+
+Exporter configuration:
+
+- `OTEL_TRACES_EXPORTER=console` (set by the `*:otel` scripts)
+- `OTEL_TRACES_EXPORTER=otlp` to send spans to an OTLP collector
+- If `OTEL_TRACES_EXPORTER` is unset (or `none`), telemetry stays disabled
+
+Example OTLP run:
+
+```bash
+OTEL_TRACES_EXPORTER=otlp \
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces \
+npm run demo
+```
+
 ## Observability demo (paired with the tracing dashboard)
 
 1. Start the observability server + dashboard:
