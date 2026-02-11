@@ -18,9 +18,10 @@ function resolveTraceExporterMode(): TraceExporterMode {
     .map((value) => value.trim().toLowerCase())
     .find(Boolean);
 
+  if (!firstExporter) return 'none';
   if (firstExporter === 'none') return 'none';
-  if (firstExporter === 'otlp') return 'otlp';
-  return 'console';
+  if (firstExporter === 'console') return 'console';
+  return 'otlp';
 }
 
 function buildTraceExporter(mode: TraceExporterMode): SpanExporter | undefined {

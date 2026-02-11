@@ -43,9 +43,9 @@ npm run clues:otel
 
 Exporter configuration:
 
-- `OTEL_TRACES_EXPORTER=console` (default in `*:otel` scripts)
+- `OTEL_TRACES_EXPORTER=console` (set by the `*:otel` scripts)
 - `OTEL_TRACES_EXPORTER=otlp` to send spans to an OTLP collector
-- `OTEL_TRACES_EXPORTER=none` to disable exporting
+- If `OTEL_TRACES_EXPORTER` is unset (or `none`), telemetry stays disabled
 
 Example OTLP run:
 
