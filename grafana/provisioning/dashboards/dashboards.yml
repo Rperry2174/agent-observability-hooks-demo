@@ -8,5 +8,5 @@ providers:
     disableDeletion: false
     editable: true
     options:
-      path: /otel-lgtm/grafana/conf/provisioning/dashboards
+      path: /otel-lgtm/haunted-repo-dashboard.json
       foldersFromFilesStructure: false
