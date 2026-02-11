@@ -30,6 +30,70 @@ You can scale it up/down:
 DEMO_INTENSITY=8 npm run demo
 ```
 
+## OpenTelemetry + Grafana observability
+
+The demo is instrumented with **OpenTelemetry** and ships with a one-command **Grafana** stack
+(Grafana + Tempo + Loki + Prometheus) via Docker.
+
+### Prerequisites
+
+- **Docker** daemon running (the compose file uses `DOCKER_HOST=tcp://localhost:2375` by default)
+- `npm install` already done
+
+### 1) Start the Grafana stack
+
+```bash
+npm run grafana:up
+```
+
+This launches the [`grafana/otel-lgtm`](https://github.com/grafana/docker-otel-lgtm) all-in-one
+container with:
+
+| Port | Service |
+|------|---------|
+| 3000 | Grafana UI (no login required) |
+| 4317 | OTLP gRPC receiver |
+| 4318 | OTLP HTTP receiver |
+
+### 2) Run the demo
+
+```bash
+npm run demo
+# or with higher intensity:
+DEMO_INTENSITY=8 npm run demo
+```
+
+The demo emits **traces**, **metrics**, and **logs** via OTLP HTTP to `localhost:4318`.
+
+### 3) View in Grafana
+
+Open **http://localhost:3000** and:
+
+- **Dashboard**: Go to *Dashboards → Haunted Repo — OpenTelemetry Demo* for a pre-built
+  overview with trace search, stage duration charts, CPU hash counters, and live logs.
+- **Explore → Tempo**: Search traces by `service.name = haunted-repo-demo`. Click any trace
+  to see the waterfall view with spans for each demo stage (filesystem, CPU, subprocess, puzzle).
+- **Explore → Prometheus**: Query metrics like `demo_stage_duration_ms_milliseconds_sum`,
+  `demo_cpu_hashes_total`, `demo_fs_files_read`, `demo_fs_bytes_read`.
+- **Explore → Loki**: Query logs with `{service_name="haunted-repo-demo"}` to see structured
+  log records for each stage.
+
+### 4) Stop the stack
+
+```bash
+npm run grafana:down
+```
+
+### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | OTLP HTTP endpoint |
+| `DEMO_INTENSITY` | `3` | Demo workload scale (1-10) |
+| `DOCKER_HOST` | `tcp://localhost:2375` | Docker daemon address |
+
+---
+
 ## Observability demo (paired with the tracing dashboard)
 
 1. Start the observability server + dashboard:
