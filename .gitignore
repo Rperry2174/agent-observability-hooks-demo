@@ -49,3 +49,6 @@ docs/murder-case/current-case.json
 
 # Agent Observability traces
 .agent-runtime-observability/
+
+# Hook audit logs (generated at runtime)
+.cursor/hooks/audit.jsonl

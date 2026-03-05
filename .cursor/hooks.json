@@ -1,94 +1,52 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/audit-log.mjs"
+      }
+    ],
     "sessionEnd": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh sessionEnd"
-      }
-    ],
-    "preToolUse": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolStart"
-      }
-    ],
-    "postToolUse": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolEnd"
-      }
-    ],
-    "postToolUseFailure": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolFailure"
-      }
-    ],
-    "beforeShellExecution": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh shellStart"
-      }
-    ],
-    "afterShellExecution": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh shellEnd"
-      }
-    ],
-    "afterMCPExecution": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh mcpEnd"
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
     "afterFileEdit": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh fileEditEnd"
+        "command": "node .cursor/hooks/enforce-typescript.mjs",
+        "timeout": 10
+      },
+      {
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
-    "beforeTabFileRead": [
+    "beforeShellExecution": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh tabReadStart"
+        "command": "node .cursor/hooks/enforce-shell-policy.mjs",
+        "timeout": 10
+      },
+      {
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
-    "afterTabFileEdit": [
+    "afterShellExecution": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh tabEditEnd"
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
-    "subagentStart": [
+    "beforeMCPExecution": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh subagentStart"
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
-    "subagentStop": [
+    "afterMCPExecution": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh subagentStop"
-      }
-    ],
-    "afterAgentThought": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh thinkingEnd"
-      }
-    ],
-    "afterAgentResponse": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh agentResponse"
-      }
-    ],
-    "preCompact": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh contextCompact"
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
     "stop": [
       {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh stop"
-      }
-    ],
-    "beforeReadFile": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh toolStart"
-      }
-    ],
-    "beforeSubmitPrompt": [
-      {
-        "command": "/Users/rperry/Desktop/projects/agent-runtime-observability/hooks/telemetry-hook.sh beforeSubmitPrompt"
+        "command": "node .cursor/hooks/audit-log.mjs"
       }
     ]
   }

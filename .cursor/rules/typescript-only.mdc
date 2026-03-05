@@ -1,0 +1,32 @@
+---
+description: Enforce TypeScript-only tech stack for all application code
+alwaysApply: true
+---
+# Tech Stack Policy: TypeScript Only
+
+## Language Requirements
+
+- **ALL new application code MUST be written in TypeScript** (.ts or .tsx files)
+- Do NOT create .js or .jsx files — use .ts and .tsx instead
+- Do NOT write Python, Ruby, Go, Java, Rust, C, or any other language for application logic
+- Configuration files (.json, .yaml, .md) and shell scripts (.sh, .ps1) are acceptable
+
+## Package Management
+
+- Use **npm** as the package manager (not yarn, pnpm, pip, cargo, etc.)
+- All dependencies must be from the npm registry
+- Do NOT install Python packages, Ruby gems, Go modules, or other non-Node.js dependencies
+
+## Framework & Runtime
+
+- Runtime: **Node.js** (via tsx for TypeScript execution)
+- Testing: **Vitest**
+- Type checking: **tsc --noEmit**
+
+## Why This Rule Exists
+
+This rule works in tandem with deterministic enforcement hooks:
+- `afterFileEdit` hook blocks creation of disallowed file types
+- `beforeShellExecution` hook blocks installation of non-TypeScript toolchains
+
+The rule steers the AI toward the right choice; the hooks catch anything that slips through.
