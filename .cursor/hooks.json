@@ -11,6 +11,12 @@
         "command": "node .cursor/hooks/audit-log.mjs"
       }
     ],
+    "preToolUse": [
+      {
+        "command": "node .cursor/hooks/enforce-typescript-pretool.mjs",
+        "timeout": 10
+      }
+    ],
     "afterFileEdit": [
       {
         "command": "node .cursor/hooks/enforce-typescript.mjs",
